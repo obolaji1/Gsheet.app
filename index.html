@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  <title>Selfie App</title>
+</head>
+<body>
+  <h1>Selfie App</h1>
+
+  <input type="text" name="name" id="name" placeholder="Name">
+  <button id="submit">Submit</button>
+
+  <p id="img64">Base 64</p>
+
+  <script>
+    function setup() {
+      noCanvas();
+      const video = createCapture(VIDEO);
+      
+      const button = document.getElementById("submit");
+
+      button.addEventListener('click', async (event) => {
+        const name = document.getElementById("name").value;
+        video.loadPixels();
+        const file = video.canvas.toDataURL();
+
+        const data = {
+          data: [
+            { name, file }
+          ]
+        };
+
+        const url = 'https://sheetdb.io/api/v1/rs4lpp8x9abn7';
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        };
+
+        try {
+          const response = await fetch(url, options);
+          const result = await response.json();
+          console.log('Success:', result);
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      async function fetchData() {
+        const url = 'https://sheetdb.io/api/v1/rs4lpp8x9abn7';
+
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+
+          data.forEach(entry => {
+            const entryContainer = document.createElement('div');
+            entryContainer.style.marginBottom = '20px';
+
+            const nameElement = document.createElement('p');
+            nameElement.textContent = `Name: ${entry.name}`;
+            entryContainer.appendChild(nameElement);
+
+            // Display the image
+            const imgElement = document.createElement('img');
+            imgElement.src = entry.file; // The base64 string is set directly as the source
+            imgElement.alt = 'Uploaded Image';
+            imgElement.style.width = '200px'; // Adjust the size as needed
+            entryContainer.appendChild(imgElement);
+
+            document.body.appendChild(entryContainer);
+          });
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+
+      fetchData(); // Call the function to fetch and display data
+    });
+  </script>
+</body>
+</html>
