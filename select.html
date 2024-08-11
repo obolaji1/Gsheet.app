@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post Image to Google Sheets</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+<body>
+  <h1>Upload Image to Google Sheets</h1>
+
+  <div id="fileInputContainer"></div>
+  <button id="uploadButton">Upload</button>
+
+  <script>
+    let base64String;
+
+    function setup() {
+      // Create a file input element using p5.js
+      const fileInput = createFileInput(handleFile);
+      fileInput.parent('fileInputContainer'); // Attach the file input to a container
+    }
+
+    function handleFile(file) {
+      if (file.type === 'image') {
+        base64String = file.data; // Get the base64 string of the selected image
+        alert("Image selected!");
+      } else {
+        alert("Please select a valid image file.");
+      }
+    }
+
+    document.getElementById('uploadButton').addEventListener('click', async () => {
+      if (!base64String) {
+        alert("Please select an image first.");
+        return;
+      }
+
+      // Prepare your data object
+      const data = {
+        data: [
+          {
+            name: "Oh Lord Bj", // Replace with actual data or input field
+            file: base64String // This is the base64 image data
+          }
+        ]
+      };
+
+      const url = 'https://api.steinhq.com/v1/storages/66b84a824d11fd04f01c806e/Sheet1'; // Replace with your Stein API endpoint
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      };
+
+      try {
+        const response = await fetch(url, options);
+        const result = await response.json();
+        console.log('Success:', result);
+        alert("Image uploaded successfully!");
+      } catch (error) {
+        console.error('Error:', error);
+        alert("Failed to upload image.");
+      }
+    });
+  </script>
+</body>
+</html>
