@@ -4,62 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Post Image to Google Sheets</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 </head>
 <body>
   <h1>Upload Image to Google Sheets</h1>
 
-  <input type="file" accept="image/*" id="fileInput">
+  <button id="captureButton">Capture Image</button>
   <button id="uploadButton">Upload</button>
 
   <script>
-    document.getElementById('uploadButton').addEventListener('click', async () => {
-      const fileInput = document.getElementById('fileInput');
-      const file = fileInput.files[0];
+    let canvas;
+    let video;
+    let base64String;
 
-      if (!file) {
-        alert("Please select a file first.");
+    function setup() {
+      // Create a canvas and a video element
+      canvas = createCanvas(320, 240);
+      canvas.hide(); // Hide the canvas initially
+      video = createCapture(VIDEO);
+      video.size(320, 240);
+      video.hide(); // Hide the video element
+    }
+
+    document.getElementById('captureButton').addEventListener('click', () => {
+      // Capture the image from the webcam
+      image(video, 0, 0, width, height);
+      base64String = canvas.elt.toDataURL(); // Convert canvas to base64
+      alert("Image captured!");
+    });
+
+    document.getElementById('uploadButton').addEventListener('click', async () => {
+      if (!base64String) {
+        alert("Please capture an image first.");
         return;
       }
 
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-
-      reader.onload = async function () {
-        const base64String = reader.result; // This is your base64 image string
-
-        // Prepare your data object
-        const data = {
-          data: [
-            {
-              name: "Oh Lord Bj", // Replace with actual data or input field
-              file: base64String // This is the base64 image data
-            }
-          ]
-        };
-
-        const url = 'https://api.steinhq.com/v1/storages/66b84a824d11fd04f01c806e/Sheet1'; // Replace with your Stein API endpoint
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        };
-
-        try {
-          const response = await fetch(url, options);
-          const result = await response.json();
-          console.log('Success:', result);
-          alert("Image uploaded successfully!");
-        } catch (error) {
-          console.error('Error:', error);
-          alert("Failed to upload image.");
-        }
+      // Prepare your data object
+      const data = {
+        data: [
+          {
+            name: "Oh Lord Bj", // Replace with actual data or input field
+            file: base64String // This is the base64 image data
+          }
+        ]
       };
 
-      reader.onerror = function (error) {
-        console.error('Error reading file:', error);
+      const url = 'https://api.steinhq.com/v1/storages/66b84a824d11fd04f01c806e/Sheet1'; // Replace with your Stein API endpoint
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
       };
+
+      try {
+        const response = await fetch(url, options);
+        const result = await response.json();
+        console.log('Success:', result);
+        alert("Image uploaded successfully!");
+      } catch (error) {
+        console.error('Error:', error);
+        alert("Failed to upload image.");
+      }
     });
   </script>
 </body>
