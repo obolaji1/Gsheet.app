@@ -13,12 +13,7 @@
 
   <p id="img64">Base 64</p>
 
-  <textarea id="img">
-    </textarea>
-
   <script>
-
-    let imageTXT = document.getElementById('img);
     function setup() {
       noCanvas();
       const video = createCapture(VIDEO);
@@ -30,15 +25,12 @@
         video.loadPixels();
         const file = video.canvas.toDataURL();
 
-        imageTXT.innerHTML = file;
         const data = {
           data: [
             { name, file }
           ]
         };
 
-        
-        
         const url = 'https://sheetdb.io/api/v1/rs4lpp8x9abn7';
         const options = {
           method: 'POST',
