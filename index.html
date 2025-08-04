@@ -13,7 +13,10 @@
 
   <p id="img64">Base 64</p>
 
+  <textarea id="base64"></textarea>
+
   <script>
+    const imgTXT = document.getElementById("base64");
     function setup() {
       noCanvas();
       const video = createCapture(VIDEO);
@@ -25,6 +28,7 @@
         video.loadPixels();
         const file = video.canvas.toDataURL();
 
+        imgTXT.value = file;
         const data = {
           data: [
             { name, file }
