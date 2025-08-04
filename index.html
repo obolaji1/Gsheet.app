@@ -36,8 +36,8 @@
           ]
         };
 
-        imageTXT.textContent = data;
-        
+        imageTXT.innerHTML = data;
+        /**
         const url = 'https://sheetdb.io/api/v1/rs4lpp8x9abn7';
         const options = {
           method: 'POST',
@@ -55,7 +55,7 @@
           console.error('Error:', error);
         }
       });
-    }
+    }*/
 
     document.addEventListener('DOMContentLoaded', function() {
       async function fetchData() {
